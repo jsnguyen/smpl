@@ -1,4 +1,4 @@
-#smpl
+# smpl
 
 The `smpl` data format is a human readable and easy to parse data format, prioritizing ease of parsing in C.
 
