@@ -1,0 +1,10 @@
+% comments 5 ever weeeee%
+@STR      /S     : "STRING TEST"; 
+% comments 5 ever weeeee%
+@ANOTHER  /I     : 12           ;
+% comments 5 ever weeeee%
+@FLOAT    /D     : 2.353459     ;
+
+% i am a comment! %
+
+@ARRAY    /S5    :"123","12afesfa","asfae","nope", "bzzzz   end";
