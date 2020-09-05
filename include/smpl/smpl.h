@@ -27,6 +27,6 @@ int ParseSMPL(char* filename);
 
 void ToggleValue(int* val); 
 
-void DynamicString(char* str, int i);
+void DynamicString(char* str, int i, int CHUNKSIZE);
 
 #endif
