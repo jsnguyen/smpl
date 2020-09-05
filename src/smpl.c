@@ -142,10 +142,34 @@ void ToggleValue(int* val){
     *val = 0;
   }
 }
+void InitDynStr(DynStr* dstr){
+  printf("initializing dstr\n");
+  dstr->size=0;
+  dstr->str=NULL;
+}
 
-void DynamicString(char* str, int i, int CHUNKSIZE){
-  char* temp;
-  if (str == NULL){
-    str = malloc(CHUNKSIZE*sizeof(str));
+void DestroyDynStr(DynStr* dstr){
+  printf("freeing dstr\n");
+  free(dstr->str);
+}
+
+void DynamicString(DynStr* dstr, char c, int i){
+  size_t s = ((i/CHUNKSIZE)+1)*CHUNKSIZE*sizeof(char);
+
+  if (dstr->str == NULL){
+    printf("malloc-ing dstr\n");
+    dstr->size = s;
+    dstr->str = malloc(s);
   }
+
+  else if(dstr->size < i+1){
+    printf("reallocing dstr\n");
+    char* temp = realloc(dstr->str,s);
+    if (temp != NULL){
+      dstr->size = s;
+      dstr->str  = temp;
+    }
+  }
+
+  dstr->str[i] = c;
 }

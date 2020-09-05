@@ -20,7 +20,8 @@ _COMMA=,
 _RPATHS=$(addprefix -Wl$(_COMMA)-rpath$(_COMMA),$(_LIBDIRS))
 LDFLAGS=-O3 $(INCDIRS) $(LIBDIRS) $(_RPATHS) $(LIBS)
 
-_SRCFILES=parse_string.c
+_SRCFILES=parse_string.c \
+					dynamic_string.c
 
 SRCS=$(addprefix $(SRCDIR)/,$(_SRCFILES))
 

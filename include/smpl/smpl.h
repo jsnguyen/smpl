@@ -15,6 +15,8 @@
 #define SMPL_ATR '/'
 #define SMPL_COM '%'
 
+#define CHUNKSIZE 2
+
 typedef struct{
   char* NAME;
   int* LEN_ARR;
@@ -23,10 +25,17 @@ typedef struct{
   double* DBL;
 } OutSMPL;
 
+typedef struct{
+  size_t size;
+  char *str;
+} DynStr;
+
 int ParseSMPL(char* filename);
 
 void ToggleValue(int* val); 
 
-void DynamicString(char* str, int i, int CHUNKSIZE);
+void InitDynStr(DynStr* dstr);
+void DestroyDynStr(DynStr* dstr);
+void DynamicString(DynStr* dstr, char c, int i);
 
 #endif
