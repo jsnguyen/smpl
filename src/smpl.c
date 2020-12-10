@@ -1,14 +1,14 @@
 #include "smpl/smpl.h"
 
-int ParseSMPL(char* filename){
+int ParseSMPL(char* filename, OutSMPL** out, int* n_values){
   FILE *file;
 
   file = fopen(filename, "r");
 
   char c;
   int step=0;
-  char var[32];
-  char value[64];
+  DynStr var;
+  DynStr val;
   int counter = 0;
   int string = 0;
   int comment = 0;
@@ -18,6 +18,8 @@ int ParseSMPL(char* filename){
   int n_declarations=0;
   int len_name=0;
   int len_value=0;
+
+  OutSMPL *temp_out=NULL;
 
   do {
     c = fgetc(file);
@@ -32,6 +34,9 @@ int ParseSMPL(char* filename){
     }
 
     if (c == SMPL_DEC){
+      InitDynStr(&var);
+      InitDynStr(&val);
+      temp_out = InitOutSMPL();
       n_declarations++;
       type = SMPL_NLL;
       digit_place = 0;
@@ -48,8 +53,9 @@ int ParseSMPL(char* filename){
       // declaration
       case 1 :
         if (c == SMPL_ATR){
-          var[counter++]='\0';
-          printf("var: %s\n", var);
+          AppendDynStr(&var, '\0',counter++);
+          printf("var: %s\n", var.str);
+          printf("size: %i\n",var.size);
           printf("len_name: %i\n",len_name);
           step++;
           counter=0;
@@ -57,7 +63,7 @@ int ParseSMPL(char* filename){
         }
 
         len_name++;
-        var[counter++]=c;
+        AppendDynStr(&var, c,counter++);
         break;
 
       case 2 :
@@ -90,11 +96,55 @@ int ParseSMPL(char* filename){
       // reading actual value
       case 3 :
         if (c == SMPL_EOL){
-          value[counter] = '\0';
-          printf("value: %s\n",value);
+          AppendDynStr(&val,'\0',counter);
+          printf("value: %s\n",val.str);
+          printf("size: %i\n",val.size);
           printf("len_value: %i\n",len_value);
           step++;
           counter=0;
+          step = 0;
+          printf("\n");
+
+          printf("copying string to temp_out\n");
+          temp_out->NAME = malloc((len_name+1)*sizeof(char));
+          temp_out->LEN = length;
+          strcpy(temp_out->NAME,var.str);
+          printf("temp_out->NAME %s\n");
+          printf("temp_out->LEN  %i\n",temp_out->LEN);
+          printf("done copying string to temp_out\n");
+
+          /*
+          switch(type){
+            case SMPL_STR:
+              temp_out->STR = malloc(length*sizeof(char));
+              for(int i=0; i<length; i++){
+                strcpy(val.str,temp_out->NAME);
+              }
+            case SMPL_INT:
+              temp_out->INT = malloc(length*sizeof(int));
+              for(int i=0; i<length; i++){
+                temp_out->INT[i]=atoi(val.str);
+              }
+            case SMPL_DBL:
+              temp_out->DBL = malloc(length*sizeof(double));
+              for(int i=0; i<length; i++){
+                temp_out->DBL[i]=atof(val.str);
+              }
+          }
+          if(n_declarations == 1){
+            printf("malloc-ed out!\n");
+            out = malloc(sizeof(OutSMPL));
+          }
+          else{
+            printf("realloc-ed out!\n");
+            out = realloc(out,n_declarations*sizeof(OutSMPL));
+          }
+          */
+
+          out[n_declarations-1]=temp_out;
+
+          //DestroyDynStr(&var);
+          //DestroyDynStr(&val);
           continue;
         }
 
@@ -105,31 +155,29 @@ int ParseSMPL(char* filename){
               continue;
             }
 
-            value[counter++] = c;
+            AppendDynStr(&val,c,counter++);
             break;
 
           case SMPL_INT:
-            value[counter++] = c;
+            AppendDynStr(&val,c,counter++);
             break;
 
           case SMPL_DBL:
-            value[counter++] = c;
+            AppendDynStr(&val,c,counter++);
             break;
 
         }
         len_value++;
         break;
 
-       case 4 :
-        // OutSMPL
-        step = 0;
-        continue;
     }
+
 
   } while (c != EOF);
 
   fclose(file);
   printf("n_declarations %i\n",n_declarations);
+  *n_values = n_declarations;
 
   return 0;
 }
@@ -142,28 +190,51 @@ void ToggleValue(int* val){
     *val = 0;
   }
 }
+
+OutSMPL* InitOutSMPL(){
+  OutSMPL* out;
+  printf("initOUT\n");
+  out = malloc(sizeof(OutSMPL));
+  out->NAME=NULL;
+  out->INT=NULL;
+  out->STR=NULL;
+  out->DBL=NULL;
+  return out;
+}
+
+void DestroyOutSMPL(OutSMPL* out){
+  if (out->NAME!=NULL){
+    free(out->NAME);
+  }
+  if (out->INT!=NULL){
+    free(out->NAME);
+  }
+  if (out->STR!=NULL){
+    free(out->NAME);
+  }
+  if (out->DBL!=NULL){
+    free(out->NAME);
+  }
+}
+
 void InitDynStr(DynStr* dstr){
-  printf("initializing dstr\n");
   dstr->size=0;
   dstr->str=NULL;
 }
 
 void DestroyDynStr(DynStr* dstr){
-  printf("freeing dstr\n");
   free(dstr->str);
 }
 
-void DynamicString(DynStr* dstr, char c, int i){
+void AppendDynStr(DynStr* dstr, char c, int i){
   size_t s = ((i/CHUNKSIZE)+1)*CHUNKSIZE*sizeof(char);
 
   if (dstr->str == NULL){
-    printf("malloc-ing dstr\n");
     dstr->size = s;
     dstr->str = malloc(s);
   }
 
   else if(dstr->size < i+1){
-    printf("reallocing dstr\n");
     char* temp = realloc(dstr->str,s);
     if (temp != NULL){
       dstr->size = s;

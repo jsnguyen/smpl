@@ -1,7 +1,3 @@
-@NAME /S : "Ursa Major" ;
-@ABBR /S : "UMa" ;
-
-# multi-line array
 @COORDINATES /S7:
 "11h03m43.67152s,61d45m03.7249s",
 "11h01m50.47564s,56d45m03.7249s",

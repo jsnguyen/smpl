@@ -4,11 +4,11 @@ int main(){
   DynStr dstr;
   InitDynStr(&dstr);
 
-  DynamicString(&dstr, '0', 0);
-  DynamicString(&dstr, '1', 1);
-  DynamicString(&dstr, '2', 2);
-  DynamicString(&dstr, '3', 3);
-  DynamicString(&dstr, '\0', 4);
+  AppendDynStr(&dstr, '0', 0);
+  AppendDynStr(&dstr, '1', 1);
+  AppendDynStr(&dstr, '2', 2);
+  AppendDynStr(&dstr, '3', 3);
+  AppendDynStr(&dstr, '\0', 4);
 
   printf("size: %i\n",dstr.size);
   printf("str: %s\n",dstr.str);

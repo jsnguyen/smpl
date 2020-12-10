@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #define SMPL_DEC '@'
 #define SMPL_VAL ':'
@@ -15,13 +16,13 @@
 #define SMPL_ATR '/'
 #define SMPL_COM '%'
 
-#define CHUNKSIZE 2
+#define CHUNKSIZE 16
 
 typedef struct{
   char* NAME;
-  int* LEN_ARR;
+  int LEN;
   int* INT;
-  char* STR;
+  char** STR;
   double* DBL;
 } OutSMPL;
 
@@ -30,12 +31,15 @@ typedef struct{
   char *str;
 } DynStr;
 
-int ParseSMPL(char* filename);
+int ParseSMPL(char* filename, OutSMPL** out, int* n_values);
 
 void ToggleValue(int* val); 
 
+OutSMPL* InitOutSMPL();
+void DestroyOutSMPL(OutSMPL* out);
+
 void InitDynStr(DynStr* dstr);
 void DestroyDynStr(DynStr* dstr);
-void DynamicString(DynStr* dstr, char c, int i);
+void AppendDynStr(DynStr* dstr, char c, int i);
 
 #endif
